@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
 import 'compras_faltantes_delivery.dart';
+import '../dao/alimento_dao.dart';
+import '../models/alimento.dart';
 
-class TelaListagemAlimentos extends StatelessWidget {
+class TelaListagemAlimentos extends StatefulWidget {
   const TelaListagemAlimentos({Key? key}) : super(key: key);
+
+  @override
+  State<TelaListagemAlimentos> createState() => _TelaListagemAlimentosState();
+}
+
+class _TelaListagemAlimentosState extends State<TelaListagemAlimentos> {
+  final AlimentoDao _dao = AlimentoDao();
+  List<Alimento> _alimentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarAlimentos();
+  }
+
+  void _carregarAlimentos() async {
+    List<Alimento> lista = await _dao.listarTodos();
+    setState(() {
+      _alimentos = lista;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +62,30 @@ class TelaListagemAlimentos extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _construirItemLista('LEITE INTEGRAL', 'NA VALIDADE\nVENCE EM 15/06/2026', const Color(0xFF00C853)),
-                _construirItemLista('ARROZ', 'NA VALIDADE\nVENCE EM 30/12/2026', const Color(0xFF00C853)),
-                _construirItemLista('FLOCOS DE MILHO', 'PERTO DA VALIDADE\nVENCE EM 7 DIAS', Colors.grey.shade400, corTexto: Colors.white),
-                _construirItemLista('CEREAL', 'VENCIDO\nVENCE EM 01/01/2026', const Color(0xFFFF3D00)),
-              ],
-            ),
+            child: _alimentos.isEmpty
+                ? const Center(child: Text("Nenhum alimento cadastrado."))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _alimentos.length,
+                    itemBuilder: (context, index) {
+                      final alimento = _alimentos[index];
+                      // Lógica simples de cores baseada no status
+                      Color corFundo = const Color(0xFF00C853);
+                      Color corTexto = Colors.white;
+                      if (alimento.status.toLowerCase() == 'vencido') {
+                        corFundo = const Color(0xFFFF3D00);
+                      } else if (alimento.status.toLowerCase().contains('perto')) {
+                        corFundo = Colors.grey.shade400;
+                      }
+
+                      return _construirItemLista(
+                        alimento.nome,
+                        '${alimento.status}\nVENCE EM ${alimento.validade}',
+                        corFundo,
+                        corTexto: corTexto,
+                      );
+                    },
+                  ),
           ),
         ],
       ),
