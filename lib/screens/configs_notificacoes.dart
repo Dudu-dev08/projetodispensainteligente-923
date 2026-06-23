@@ -105,20 +105,20 @@ class _TelaConfigsNotificacoesEstado extends State<TelaConfigsNotificacoes> {
               child: _notificacoes.isEmpty
                   ? const Center(child: Text("Nenhum alerta salvo."))
                   : ListView.builder(
-                      itemCount: _notificacoes.length,
-                      itemBuilder: (context, index) {
-                        final notif = _notificacoes[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: const Icon(Icons.notifications, color: Color(0xFF1E00C8)),
-                            title: Text(notif.titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('${notif.data}\n${notif.mensagem}'),
-                            isThreeLine: true,
-                          ),
-                        );
-                      },
+                itemCount: _notificacoes.length,
+                itemBuilder: (context, index) {
+                  final notif = _notificacoes[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.notifications, color: Color(0xFF1E00C8)),
+                      title: Text(notif.titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('${notif.data}\n${notif.mensagem}'),
+                      isThreeLine: true,
                     ),
+                  );
+                },
+              ),
             ),
           ],
         ),
