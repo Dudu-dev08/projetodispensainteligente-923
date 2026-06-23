@@ -1,31 +1,8 @@
 import 'package:flutter/material.dart';
 import 'mercados_disponiveis.dart';
-import '../dao/item_compra_dao.dart';
-import '../models/item_compra.dart';
 
-class TelaComprasFaltantesDelivery extends StatefulWidget {
+class TelaComprasFaltantesDelivery extends StatelessWidget {
   const TelaComprasFaltantesDelivery({Key? key}) : super(key: key);
-
-  @override
-  State<TelaComprasFaltantesDelivery> createState() => _TelaComprasFaltantesDeliveryState();
-}
-
-class _TelaComprasFaltantesDeliveryState extends State<TelaComprasFaltantesDelivery> {
-  final ItemCompraDao _dao = ItemCompraDao();
-  List<ItemCompra> _itens = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _carregarItens();
-  }
-
-  void _carregarItens() async {
-    List<ItemCompra> lista = await _dao.listarTodos();
-    setState(() {
-      _itens = lista;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,21 +50,15 @@ class _TelaComprasFaltantesDeliveryState extends State<TelaComprasFaltantesDeliv
             ),
           ),
           Expanded(
-            child: _itens.isEmpty
-                ? const Center(child: Text("Nenhum item na lista de compras."))
-                : ListView.builder(
-                    itemCount: _itens.length,
-                    itemBuilder: (context, index) {
-                      final item = _itens[index];
-                      // Simula dados visuais para manter a estética
-                      return _WidgetItemDelivery(
-                        nome: item.nome,
-                        preco: 'Qtd: ${item.quantidade}', 
-                        status: 'URGENTE',
-                        corStatus: Colors.red,
-                      );
-                    },
-                  ),
+            child: ListView(
+              children: const [
+                _WidgetItemDelivery(nome: 'Arroz 5kg', preco: 'R\$ 24,90', status: 'URGENTE', corStatus: Colors.red),
+                _WidgetItemDelivery(nome: 'Feijão Carioca 1kg', preco: 'R\$ 8,50', status: 'URGENTE', corStatus: Colors.red),
+                _WidgetItemDelivery(nome: 'Azeite 500ml', preco: 'R\$ 19,90', status: 'URGENTE', corStatus: Colors.red),
+                _WidgetItemDelivery(nome: 'Ovos (dúzia)', preco: 'R\$ 12,00', status: 'BAIXO', corStatus: Colors.orange),
+                _WidgetItemDelivery(nome: 'Leite Integral 4un', preco: 'R\$ 18,00', status: 'BAIXO', corStatus: Colors.orange),
+              ],
+            ),
           ),
         ],
       ),
