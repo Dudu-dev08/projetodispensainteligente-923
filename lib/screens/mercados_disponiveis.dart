@@ -11,19 +11,12 @@ class TelaMercadosDisponiveis extends StatefulWidget {
 
 class _TelaMercadosDisponiveisState extends State<TelaMercadosDisponiveis> {
   final MercadoDao _dao = MercadoDao();
-  List<Mercado> _mercados = [];
+  late Future<List<Mercado>> futureLista;
 
   @override
   void initState() {
     super.initState();
-    _carregarMercados();
-  }
-
-  void _carregarMercados() async {
-    List<Mercado> lista = await _dao.listarTodos();
-    setState(() {
-      _mercados = lista;
-    });
+    futureLista = _dao.listarTodos();
   }
 
   @override
@@ -49,19 +42,29 @@ class _TelaMercadosDisponiveisState extends State<TelaMercadosDisponiveis> {
             const Text('Mercados (Delivery)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E00C8))),
             const SizedBox(height: 16),
             Expanded(
-              child: _mercados.isEmpty
-                  ? const Center(child: Text("Nenhum mercado cadastrado."))
-                  : ListView.builder(
-                      itemCount: _mercados.length,
-                      itemBuilder: (context, index) {
-                        final mercado = _mercados[index];
-                        return _CartaoMercado(
-                          nome: mercado.nome,
-                          endereco: mercado.endereco,
-                          icone: Icons.store,
-                        );
-                      },
-                    ),
+              child: FutureBuilder<List<Mercado>>(
+                future: futureLista,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final listaMercados = snapshot.requireData;
+                  if (listaMercados.isEmpty) {
+                    return const Center(child: Text("Nenhum mercado cadastrado."));
+                  }
+                  return ListView.builder(
+                    itemCount: listaMercados.length,
+                    itemBuilder: (context, index) {
+                      final mercado = listaMercados[index];
+                      return _CartaoMercado(
+                        nome: mercado.nome,
+                        endereco: mercado.endereco,
+                        icone: Icons.store,
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

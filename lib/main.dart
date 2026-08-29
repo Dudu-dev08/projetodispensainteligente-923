@@ -3,6 +3,7 @@ import 'screens/inicio_painel.dart';
 import 'screens/listagem_alimentos.dart';
 import 'screens/colocar_novo_produto.dart';
 import 'screens/configs_notificacoes.dart';
+import 'screens/tela_login.dart';
 
 void main() {
   runApp(const MeuApp());
@@ -20,7 +21,7 @@ class MeuApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E00C8)),
         useMaterial3: true,
       ),
-      home: const NavegacaoPrincipal(),
+      home: const TelaLogin(),
     );
   }
 }

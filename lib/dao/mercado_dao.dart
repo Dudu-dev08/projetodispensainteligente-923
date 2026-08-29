@@ -11,6 +11,7 @@ class MercadoDao {
   Future<List<Mercado>> listarTodos() async {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, dynamic>> maps = await db.query('mercados');
+    await Future.delayed(const Duration(seconds: 5));
     return List.generate(maps.length, (i) {
       return Mercado.fromMap(maps[i]);
     });

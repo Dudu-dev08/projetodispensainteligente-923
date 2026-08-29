@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "dispensa.db";
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -31,6 +31,7 @@ class DatabaseHelper {
     await db.execute('DROP TABLE IF EXISTS itens_compra');
     await db.execute('DROP TABLE IF EXISTS mercados');
     await db.execute('DROP TABLE IF EXISTS notificacoes');
+    await db.execute('DROP TABLE IF EXISTS usuarios');
     await _onCreate(db, newVersion);
   }
 
@@ -68,6 +69,19 @@ class DatabaseHelper {
             mensagem TEXT NOT NULL
           )
           ''');
+
+    await db.execute('''
+          CREATE TABLE usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            senha TEXT NOT NULL
+          )
+          ''');
+
+    await db.insert('usuarios', {
+      'email': 'admin@teste.com',
+      'senha': '123',
+    });
 
     await db.insert('alimentos', {
       'nome': 'Arroz 5kg',

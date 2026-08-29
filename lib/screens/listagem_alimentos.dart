@@ -12,19 +12,12 @@ class TelaListagemAlimentos extends StatefulWidget {
 
 class _TelaListagemAlimentosState extends State<TelaListagemAlimentos> {
   final AlimentoDao _dao = AlimentoDao();
-  List<Alimento> _alimentos = [];
+  late Future<List<Alimento>> futureLista;
 
   @override
   void initState() {
     super.initState();
-    _carregarAlimentos();
-  }
-
-  void _carregarAlimentos() async {
-    List<Alimento> lista = await _dao.listarTodos();
-    setState(() {
-      _alimentos = lista;
-    });
+    futureLista = _dao.listarTodos();
   }
 
   @override
@@ -62,30 +55,40 @@ class _TelaListagemAlimentosState extends State<TelaListagemAlimentos> {
             ),
           ),
           Expanded(
-            child: _alimentos.isEmpty
-                ? const Center(child: Text("Nenhum alimento cadastrado."))
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _alimentos.length,
-                    itemBuilder: (context, index) {
-                      final alimento = _alimentos[index];
-                      // Lógica simples de cores baseada no status
-                      Color corFundo = const Color(0xFF00C853);
-                      Color corTexto = Colors.white;
-                      if (alimento.status.toLowerCase() == 'vencido') {
-                        corFundo = const Color(0xFFFF3D00);
-                      } else if (alimento.status.toLowerCase().contains('perto')) {
-                        corFundo = Colors.grey.shade400;
-                      }
+            child: FutureBuilder<List<Alimento>>(
+              future: futureLista,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final listaAlimentos = snapshot.requireData;
+                if (listaAlimentos.isEmpty) {
+                  return const Center(child: Text("Nenhum alimento cadastrado."));
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: listaAlimentos.length,
+                  itemBuilder: (context, index) {
+                    final alimento = listaAlimentos[index];
 
-                      return _construirItemLista(
-                        alimento.nome,
-                        '${alimento.status}\nVENCE EM ${alimento.validade}',
-                        corFundo,
-                        corTexto: corTexto,
-                      );
-                    },
-                  ),
+                    Color corFundo = const Color(0xFF00C853);
+                    Color corTexto = Colors.white;
+                    if (alimento.status.toLowerCase() == 'vencido') {
+                      corFundo = const Color(0xFFFF3D00);
+                    } else if (alimento.status.toLowerCase().contains('perto')) {
+                      corFundo = Colors.grey.shade400;
+                    }
+
+                    return _construirItemLista(
+                      alimento.nome,
+                      '${alimento.status}\nVENCE EM ${alimento.validade}',
+                      corFundo,
+                      corTexto: corTexto,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

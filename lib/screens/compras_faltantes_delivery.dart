@@ -12,19 +12,12 @@ class TelaComprasFaltantesDelivery extends StatefulWidget {
 
 class _TelaComprasFaltantesDeliveryState extends State<TelaComprasFaltantesDelivery> {
   final ItemCompraDao _dao = ItemCompraDao();
-  List<ItemCompra> _itens = [];
+  late Future<List<ItemCompra>> futureLista;
 
   @override
   void initState() {
     super.initState();
-    _carregarItens();
-  }
-
-  void _carregarItens() async {
-    List<ItemCompra> lista = await _dao.listarTodos();
-    setState(() {
-      _itens = lista;
-    });
+    futureLista = _dao.listarTodos();
   }
 
   @override
@@ -73,21 +66,31 @@ class _TelaComprasFaltantesDeliveryState extends State<TelaComprasFaltantesDeliv
             ),
           ),
           Expanded(
-            child: _itens.isEmpty
-                ? const Center(child: Text("Nenhum item na lista de compras."))
-                : ListView.builder(
-                    itemCount: _itens.length,
-                    itemBuilder: (context, index) {
-                      final item = _itens[index];
-                      // Simula dados visuais para manter a estética
-                      return _WidgetItemDelivery(
-                        nome: item.nome,
-                        preco: 'Qtd: ${item.quantidade}', 
-                        status: 'URGENTE',
-                        corStatus: Colors.red,
-                      );
-                    },
-                  ),
+            child: FutureBuilder<List<ItemCompra>>(
+              future: futureLista,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final listaItens = snapshot.requireData;
+                if (listaItens.isEmpty) {
+                  return const Center(child: Text("Nenhum item na lista de compras."));
+                }
+                return ListView.builder(
+                  itemCount: listaItens.length,
+                  itemBuilder: (context, index) {
+                    final item = listaItens[index];
+                    // Simula dados visuais para manter a estética
+                    return _WidgetItemDelivery(
+                      nome: item.nome,
+                      preco: 'Qtd: ${item.quantidade}', 
+                      status: 'URGENTE',
+                      corStatus: Colors.red,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
