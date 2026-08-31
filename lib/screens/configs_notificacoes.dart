@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../dao/notificacao_dao.dart'; //comunicacao com banco de dados
 import '../models/notificacao.dart'; //modelo de notificacao
+import '../shared_prefs/shared_prefs.dart';
+import 'tela_login.dart';
 
 
 class TelaConfigsNotificacoes extends StatefulWidget { //tela dinâmica
@@ -120,10 +122,74 @@ class _TelaConfigsNotificacoesEstado extends State<TelaConfigsNotificacoes> {
                 },
               ),
             ),
+            const Divider(thickness: 1.5),
+            const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'CONTA',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E00C8)),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _deslogar,
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text(
+                  'Sair da conta',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
     );
+  }
+
+  void _deslogar() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sair da conta'),
+        content: const Text('Tem certeza que deseja sair?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Sair', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar == true) {
+      await SharedPrefs().setUserStatus(false);
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const TelaLogin()),
+        (route) => false,
+      );
+    }
   }
 
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../dao/usuario_dao.dart';
+import '../shared_prefs/shared_prefs.dart';
 
 class TelaLogin extends StatefulWidget {
   const TelaLogin({Key? key}) : super(key: key);
@@ -36,6 +37,7 @@ class _TelaLoginState extends State<TelaLogin> {
     });
 
     if (isAuth) {
+      await SharedPrefs().setUserStatus(true);
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

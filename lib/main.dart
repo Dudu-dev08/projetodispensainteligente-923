@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'screens/inicio_painel.dart';
 import 'screens/listagem_alimentos.dart';
 import 'screens/colocar_novo_produto.dart';
 import 'screens/configs_notificacoes.dart';
 import 'screens/tela_login.dart';
+import 'shared_prefs/shared_prefs.dart';
 
-void main() {
-  runApp(const MeuApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final bool logado = await SharedPrefs().getUserStatus();
+  runApp(MeuApp(telaInicial: logado ? const NavegacaoPrincipal() : const TelaLogin()));
 }
 
 class MeuApp extends StatelessWidget {
-  const MeuApp({super.key});
+  final Widget telaInicial;
+  const MeuApp({super.key, required this.telaInicial});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,7 @@ class MeuApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E00C8)),
         useMaterial3: true,
       ),
-      home: const TelaLogin(),
+      home: telaInicial,
     );
   }
 }
