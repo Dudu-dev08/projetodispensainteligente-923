@@ -32,6 +32,7 @@ class _TelaLoginState extends State<TelaLogin> {
 
     bool isAuth = await UserDao().login(email, password);
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
@@ -46,11 +47,9 @@ class _TelaLoginState extends State<TelaLogin> {
         ),
       );
     } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('E-mail ou senha incorretos')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('E-mail ou senha incorretos')),
+      );
     }
   }
 
@@ -65,21 +64,33 @@ class _TelaLoginState extends State<TelaLogin> {
       return;
     }
 
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A senha deve ter pelo menos 6 caracteres.')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    await UserDao().criarConta(email, password);
+    bool criou = await UserDao().criarConta(email, password);
 
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
 
-    if (mounted) {
+    if (criou) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Conta criada com sucesso! Fazendo login...')),
       );
       _fazerLogin();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Este e-mail já está cadastrado.')),
+      );
     }
   }
 

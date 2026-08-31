@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "dispensa.db";
-  static const _databaseVersion = 3;
+  static const _databaseVersion = 4;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -73,7 +73,7 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
             senha TEXT NOT NULL
           )
           ''');

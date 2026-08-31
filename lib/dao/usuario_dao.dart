@@ -13,11 +13,17 @@ class UserDao {
     return result.isNotEmpty;
   }
 
-  Future<void> criarConta(String email, String senha) async {
-    final db = await DatabaseHelper.instance.database;
-    await db.insert('usuarios', {
-      'email': email,
-      'senha': senha,
-    });
+  Future<bool> criarConta(String email, String senha) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      await db.insert(
+        'usuarios',
+        {'email': email, 'senha': senha},
+        conflictAlgorithm: ConflictAlgorithm.abort,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 }
